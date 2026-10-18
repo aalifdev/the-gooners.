@@ -1,0 +1,717 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090909">
+<title>The Gooners — Private Archive</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap');
+
+:root {
+  --bg: #090909;
+  --panel: #111110;
+  --white: #f0eee9;
+  --muted: #898780;
+  --line: #292825;
+  --red: #c65b55;
+  --blue: #789bb5;
+  --purple: #a48ac0;
+  --gold: #b9a16b;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+}
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, a {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+#grain {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  opacity: .12;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+}
+
+.ambient {
+  position: fixed;
+  width: 450px;
+  height: 450px;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff07, transparent 70%);
+  pointer-events: none;
+}
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: 25px 6%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #ffffff0d;
+  background: #090909c9;
+  backdrop-filter: blur(18px);
+}
+
+.brand {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 4px;
+}
+
+.header-right {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: #77756f;
+}
+
+#app {
+  min-height: 100svh;
+  position: relative;
+}
+
+.scene {
+  display: none;
+  position: absolute;
+  inset: 0;
+  min-height: 100svh;
+  width: 100%;
+  overflow-y: auto;
+  padding: 110px 22px 35px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.scene.active {
+  display: flex;
+  animation: appear .65s cubic-bezier(.2,.7,.2,1) both;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(15px) scale(.99);
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.eyebrow {
+  color: #85827b;
+  font-size: 9px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+h1, h2, .editorial {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 500;
+}
+
+.hero-title {
+  font-size: clamp(48px, 11vw, 100px);
+  line-height: .98;
+  letter-spacing: -3px;
+}
+
+.hero-title span {
+  display: block;
+  color: #77756f;
+  font-style: italic;
+}
+
+.description {
+  max-width: 370px;
+  color: #85827b;
+  font-size: 13px;
+  line-height: 1.9;
+  margin-top: 25px;
+}
+
+.primary-btn {
+  margin-top: 38px;
+  min-width: 175px;
+  padding: 16px 23px;
+  background: var(--white);
+  color: #111;
+  border: 1px solid var(--white);
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  transition: .25s ease;
+}
+
+.primary-btn:hover {
+  background: transparent;
+  color: var(--white);
+  transform: translateY(-2px);
+}
+
+.secondary-btn {
+  margin-top: 38px;
+  padding: 15px 25px;
+  border: 1px solid #484640;
+  background: #ffffff04;
+  color: #d6d3cb;
+  border-radius: 2px;
+  font-size: 10px;
+  letter-spacing: 3px;
+  cursor: pointer;
+  transition: .25s;
+}
+
+.secondary-btn:hover {
+  border-color: #aaa59a;
+  background: #ffffff08;
+}
+
+.counter {
+  position: absolute;
+  top: 95px;
+  left: 6%;
+  color: #65635d;
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+
+.bottom-note {
+  position: absolute;
+  bottom: 25px;
+  color: #5f5d57;
+  font-size: 9px;
+  letter-spacing: 3px;
+}
+
+.big-number {
+  font-size: clamp(85px, 22vw, 180px);
+  line-height: 1;
+  color: #f1eee7;
+  letter-spacing: -8px;
+  text-shadow: 0 10px 60px #ffffff08;
+}
+
+.big-number .slash {
+  color: #44423e;
+}
+
+.statement {
+  max-width: 650px;
+  font-size: clamp(28px, 6.5vw, 60px);
+  line-height: 1.2;
+  letter-spacing: -1.5px;
+}
+
+.statement em {
+  color: #8e8a81;
+  font-weight: 500;
+}
+
+.roster-list {
+  width: min(100%, 560px);
+  border-top: 1px solid var(--line);
+  margin-top: 25px;
+}
+
+.roster-row {
+  display: grid;
+  grid-template-columns: 45px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  text-align: left;
+  padding: 17px 8px;
+  border-bottom: 1px solid var(--line);
+  animation: rowIn .5s both;
+}
+
+.roster-row:nth-child(2) { animation-delay: .08s; }
+.roster-row:nth-child(3) { animation-delay: .16s; }
+.roster-row:nth-child(4) { animation-delay: .24s; }
+.roster-row:nth-child(5) { animation-delay: .32s; }
+
+@keyframes rowIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.row-no {
+  color: #77746c;
+  font-size: 11px;
+}
+
+.row-name {
+  font-size: clamp(12px, 3.3vw, 15px);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.row-tier {
+  color: #8b8880;
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-align: right;
+}
+
+.profile {
+  --accent: #d0cdc5;
+  width: min(100%, 620px);
+  padding: 40px 20px;
+  position: relative;
+  border: 1px solid #ffffff15;
+  background:
+    radial-gradient(ellipse at 50% 0%, #ffffff09, transparent 65%),
+    linear-gradient(145deg, #141413, #0b0b0a);
+  box-shadow: 0 25px 80px #0008;
+  transform-style: preserve-3d;
+  animation: profileIn .8s ease both;
+}
+
+@keyframes profileIn {
+  from {
+    opacity: 0;
+    transform: perspective(900px) rotateX(8deg) translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(900px) rotateX(0) translateY(0);
+  }
+}
+
+.profile::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 12%;
+  width: 76%;
+  height: 1px;
+  background: var(--accent);
+  opacity: .6;
+}
+
+.profile .rank-label {
+  color: var(--accent);
+  font-size: 9px;
+  letter-spacing: 4px;
+}
+
+.profile .rank-number {
+  margin-top: 15px;
+  font-size: clamp(70px, 16vw, 120px);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--accent);
+  text-shadow: 0 0 35px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.profile .username {
+  margin-top: 22px;
+  font-size: clamp(19px, 5vw, 31px);
+  letter-spacing: -1px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.profile .tier {
+  margin-top: 14px;
+  color: #a29e95;
+  font-size: 10px;
+  letter-spacing: 3px;
+}
+
+.profile .rule {
+  width: 38px;
+  height: 1px;
+  margin: 24px auto 0;
+  background: var(--accent);
+  opacity: .7;
+}
+
+.red-profile { --accent: var(--red); }
+.blue-profile { --accent: var(--blue); }
+.purple-profile { --accent: var(--purple); }
+.gold-profile { --accent: var(--gold); }
+
+.handle-link {
+  display: inline-block;
+  margin-top: 24px;
+  color: var(--accent);
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-decoration: none;
+  border-bottom: 1px solid #ffffff25;
+  padding-bottom: 5px;
+}
+
+.handle-link:hover {
+  border-color: var(--accent);
+}
+
+.boss-screen {
+  background: radial-gradient(ellipse at 50% 45%, #31101055, #090909 65%);
+}
+
+.boss-screen .boss-name {
+  color: #f2e9e6;
+  text-shadow: 0 0 25px #a32e2e33;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(35px, 9vw, 76px);
+  margin: 25px 0;
+  overflow-wrap: anywhere;
+}
+
+.boss-screen .classified {
+  color: #a56a64;
+  font-size: 9px;
+  letter-spacing: 4px;
+}
+
+.boss-screen.glitching {
+  animation: glitch 0.16s steps(2) infinite;
+}
+
+.boss-screen.glitching .boss-name {
+  text-shadow: 4px 0 #ff3030, -4px 0 #5dcaff;
+  animation: glitchText .13s steps(2) infinite;
+}
+
+@keyframes glitch {
+  0% { transform: translateX(0); filter: none; }
+  25% { transform: translateX(4px); filter: contrast(1.5); }
+  50% { transform: translateX(-4px); filter: hue-rotate(20deg); }
+  75% { transform: translateX(2px); filter: contrast(2); }
+}
+
+@keyframes glitchText {
+  0% { transform: translateX(-4px); }
+  50% { transform: translateX(4px) skewX(4deg); }
+  100% { transform: translateX(0); }
+}
+
+.ending-title {
+  font-size: clamp(34px, 8vw, 75px);
+  line-height: 1.15;
+}
+
+.ending-title em {
+  display: block;
+  color: #99938b;
+}
+
+.ending-mark {
+  margin-top: 40px;
+  font-size: 24px;
+  color: #b0a99d;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  padding: 13px;
+  text-align: center;
+  color: #4e4c47;
+  background: linear-gradient(transparent, #090909);
+  font-size: 8px;
+  letter-spacing: 3px;
+  z-index: 8;
+  pointer-events: none;
+}
+
+@media (max-height: 650px) {
+  .scene { padding-top: 95px; padding-bottom: 45px; }
+  .profile { padding: 25px 15px; }
+  .profile .rank-number { font-size: 65px; }
+  .profile .username { margin-top: 12px; }
+  .primary-btn, .secondary-btn { margin-top: 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+</style>
+</head>
+
+<body>
+<div id="grain"></div>
+<div class="ambient"></div>
+
+<header>
+  <div class="brand">THE GOONERS</div>
+  <div class="header-right" id="headerCount">PRIVATE ARCHIVE / 001</div>
+</header>
+
+<main id="app">
+
+  <!-- PAGE 1 -->
+  <section class="scene active" id="page1">
+    <div class="eyebrow">A PRIVATE COLLECTION · MMXXVI</div>
+    <h1 class="hero-title">Meet the <span>Gooners.</span></h1>
+    <p class="description">
+      Five names. Five different levels.
+      One archive that should probably remain classified.
+    </p>
+    <button class="primary-btn" onclick="goTo('page2', 2)">
+      ENTER ARCHIVE &nbsp; ↗
+    </button>
+    <div class="bottom-note">SCROLLING NOT REQUIRED · CLICK TO PROCEED</div>
+  </section>
+
+  <!-- PAGE 2 -->
+  <section class="scene" id="page2">
+    <div class="counter">01 / 06 — THE ROSTER</div>
+    <div class="eyebrow">THE PEOPLE INVOLVED</div>
+    <div class="big-number">05<span class="slash">/</span>01</div>
+    <h2 class="statement" style="margin-top:20px">
+      Five gooners.<br><em>One final boss.</em>
+    </h2>
+
+    <div class="roster-list">
+      <div class="roster-row">
+        <span class="row-no">05</span>
+        <span class="row-name" style="color:#c65b55">evil_effect</span>
+        <span class="row-tier">A TIER 🥵</span>
+      </div>
+      <div class="roster-row">
+        <span class="row-no">04</span>
+        <span class="row-name" style="color:#789bb5">amit_pal007_</span>
+        <span class="row-tier">B TIER 😞</span>
+      </div>
+      <div class="roster-row">
+        <span class="row-no">03</span>
+        <span class="row-name" style="color:#a48ac0">navinya_k_08</span>
+        <span class="row-tier">S TIER 😈</span>
+      </div>
+      <div class="roster-row">
+        <span class="row-no">02</span>
+        <span class="row-name" style="color:#b9a16b">itz_ayushrajak</span>
+        <span class="row-tier">S+ TIER 🧏</span>
+      </div>
+      <div class="roster-row">
+        <span class="row-no">01</span>
+        <span class="row-name">Gun_woo777</span>
+        <span class="row-tier">CLASSIFIED</span>
+      </div>
+    </div>
+
+    <button class="primary-btn" onclick="goTo('page3', 3)">
+      MEET THE REAL GOONERS →
+    </button>
+  </section>
+
+  <!-- PAGE 3 -->
+  <section class="scene" id="page3">
+    <div class="eyebrow">BEYOND THE ORDINARY</div>
+    <h2 class="statement">
+      Meet the<br><em>real gooners.</em>
+    </h2>
+    <p class="description">
+      The rankings are questionable.
+      The confidence is not.
+    </p>
+    <button class="primary-btn" onclick="goTo('page4', 4)">
+      REVEAL RANK 03 →
+    </button>
+  </section>
+
+  <!-- PAGE 4 -->
+  <section class="scene" id="page4">
+    <div class="counter">03 / 05 — THE RANKINGS</div>
+    <div class="eyebrow">THE THIRD POSITION</div>
+    <div class="profile purple-profile">
+      <div class="rank-label">RANK / 03</div>
+      <div class="rank-number">03</div>
+      <div class="username">navinya_k_08</div>
+      <div class="tier">S TIER GOONER 😈</div>
+      <div class="rule"></div>
+      <a class="handle-link" href="https://www.instagram.com/navinya_k_08/" target="_blank" rel="noopener">VIEW INSTAGRAM ↗</a>
+    </div>
+    <button class="primary-btn" onclick="goTo('page5', 5)">
+      NEXT PROFILE →
+    </button>
+  </section>
+
+  <!-- PAGE 5 -->
+  <section class="scene" id="page5">
+    <div class="counter">02 / 05 — THE RANKINGS</div>
+    <div class="eyebrow">THE SECOND POSITION</div>
+    <div class="profile gold-profile">
+      <div class="rank-label">RANK / 02</div>
+      <div class="rank-number">02</div>
+      <div class="username">itz_ayushrajak</div>
+      <div class="tier">S+ TIER GOONER 🧏</div>
+      <div class="rule"></div>
+      <a class="handle-link" href="https://www.instagram.com/itz_ayushrajak/" target="_blank" rel="noopener">VIEW INSTAGRAM ↗</a>
+    </div>
+    <button class="primary-btn" onclick="goTo('page6', 6)">
+      MEET THE FINAL BOSS →
+    </button>
+  </section>
+
+  <!-- PAGE 6 -->
+  <section class="scene boss-screen" id="page6">
+    <div class="eyebrow">AN UNIDENTIFIED ENTITY</div>
+    <h2 class="statement">
+      But still, you haven't met
+    </h2>
+    <div class="boss-name">Gun_woo777</div>
+    <div class="classified">FINAL BOSS · LEVEL UNKNOWN</div>
+    <p class="description">
+      The archive cannot accurately measure this individual.
+    </p>
+    <button class="primary-btn" onclick="activateGlitch()">
+      UNLOCK CLASSIFIED FILE
+    </button>
+  </section>
+
+  <!-- PAGE 7 -->
+  <section class="scene" id="page7">
+    <div class="eyebrow">ARCHIVE RESTORED</div>
+    <h2 class="ending-title">
+      Oh, sorry.<em>He's too legendary.</em>
+    </h2>
+    <p class="description">
+      This gooner is so legendary<br>
+      that we can't show his title.
+    </p>
+    <div class="ending-mark">✳</div>
+    <div class="eyebrow" style="margin-top:28px">
+      THE FINISHED.
+    </div>
+    <button class="secondary-btn" onclick="restart()">
+      ↺ REWATCH EXPERIENCE
+    </button>
+  </section>
+
+</main>
+
+<footer>CONFIDENTIAL · THE GOONERS ARCHIVE</footer>
+
+<script>
+const pages = [...document.querySelectorAll('.scene')];
+const headerCount = document.getElementById('headerCount');
+let currentPage = 1;
+let glitchTimer = null;
+let navigationTimer = null;
+
+function goTo(id, number) {
+  clearTimeout(glitchTimer);
+  clearTimeout(navigationTimer);
+
+  pages.forEach(page => {
+    page.classList.remove('active', 'glitching');
+  });
+
+  const next = document.getElementById(id);
+  next.scrollTop = 0;
+  next.classList.add('active');
+
+  currentPage = number;
+  headerCount.textContent =
+    'PRIVATE ARCHIVE / 00' + number;
+
+  if (id === 'page6') {
+    next.classList.remove('glitching');
+  }
+}
+
+function activateGlitch() {
+  const boss = document.getElementById('page6');
+  const button = boss.querySelector('button');
+
+  if (button.disabled) return;
+
+  button.disabled = true;
+  button.style.opacity = '.4';
+  button.textContent = 'ACCESSING FILE...';
+
+  boss.classList.add('glitching');
+
+  // Glitch lasts exactly five seconds.
+  glitchTimer = setTimeout(() => {
+    boss.classList.remove('glitching');
+
+    goTo('page7', 7);
+    button.disabled = false;
+    button.style.opacity = '1';
+    button.textContent = 'UNLOCK CLASSIFIED FILE';
+  }, 5000);
+}
+
+function restart() {
+  clearTimeout(glitchTimer);
+  clearTimeout(navigationTimer);
+
+  const button = document.querySelector('#page6 button');
+  button.disabled = false;
+  button.style.opacity = '1';
+  button.textContent = 'UNLOCK CLASSIFIED FILE';
+
+  goTo('page1', 1);
+}
+
+// Small, restrained 3D tilt for the profile card.
+document.querySelectorAll('.profile').forEach(profile => {
+  profile.addEventListener('pointermove', event => {
+    if (event.pointerType !== 'mouse') return;
+
+    const rect = profile.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - .5;
+    const y = (event.clientY - rect.top) / rect.height - .5;
+
+    profile.style.transform =
+      `perspective(1000px) rotateY(${x * 4}deg) rotateX(${-y * 4}deg)`;
+  });
+
+  profile.addEventListener('pointerleave', () => {
+    profile.style.transform = '';
+  });
+});
+</script>
+</body>
+  </html>
+      
